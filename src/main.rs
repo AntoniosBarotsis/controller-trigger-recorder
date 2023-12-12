@@ -111,6 +111,17 @@ impl MyApp {
       should_exit,
     }
   }
+
+  fn queue_to_points(&self, queue: &Arc<Mutex<CircularQueue<f64>>>) -> Vec<[f64; 2]> {
+    #[allow(clippy::cast_precision_loss)]
+    queue
+      .lock()
+      .clone()
+      .iter()
+      .enumerate()
+      .map(|(index, v)| [(self.window_size - index - 1) as f64, (*v) * 100.0])
+      .collect::<Vec<_>>()
+  }
 }
 
 impl eframe::App for MyApp {
@@ -129,14 +140,15 @@ impl eframe::App for MyApp {
     egui::CentralPanel::default()
       .frame(frame.fill(egui::Color32::TRANSPARENT).inner_margin(0.0))
       .show(ctx, |ui| {
+        #[allow(clippy::cast_precision_loss)]
         let plot = Plot::new("id_source")
+          .clamp_grid(true)
           .x_axis_formatter(invis_formater)
           .y_axis_formatter(invis_formater)
           .include_x(0)
           .include_x((self.window_size + 10) as f64)
           .include_y(1)
           .include_y(100)
-          .clamp_grid(true)
           .show_background(false)
           .show_grid(Vec2b::default())
           .allow_scroll(false)
@@ -144,22 +156,8 @@ impl eframe::App for MyApp {
           .allow_zoom(false);
 
         // TODO: RW Lock
-        let right = self
-          .right
-          .lock()
-          .clone()
-          .iter()
-          .enumerate()
-          .map(|(index, v)| [(self.window_size - index - 1) as f64, (*v) * 100.0])
-          .collect::<Vec<_>>();
-        let left = self
-          .left
-          .lock()
-          .clone()
-          .iter()
-          .enumerate()
-          .map(|(index, v)| [(self.window_size - index - 1) as f64, (*v) * 100.0])
-          .collect::<Vec<_>>();
+        let right = self.queue_to_points(&self.right);
+        let left = self.queue_to_points(&self.left);
 
         plot.show(ui, |plot_ui| {
           plot_ui.line(Line::new(PlotPoints::from(right)).color(Color32::GREEN));
