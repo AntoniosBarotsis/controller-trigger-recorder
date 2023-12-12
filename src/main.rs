@@ -17,6 +17,10 @@ use egui_plot::{Line, Plot, PlotPoints};
 use gilrs::Button::{LeftTrigger2, RightTrigger2};
 use gilrs::Gilrs;
 
+// TODO:
+// Refresh rate arg/enum default
+// Thicker lines
+// Longer?
 fn main() {
   let should_exit = Arc::new(AtomicBool::new(false));
   let should_exit_clone = should_exit.clone();
@@ -155,7 +159,6 @@ impl eframe::App for MyApp {
           .allow_drag(false)
           .allow_zoom(false);
 
-        // TODO: RW Lock
         let right = self.queue_to_points(&self.right);
         let left = self.queue_to_points(&self.left);
 
