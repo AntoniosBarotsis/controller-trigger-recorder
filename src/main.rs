@@ -5,7 +5,7 @@ use std::{sync::Arc, time::Duration};
 
 use circular_queue::CircularQueue;
 use eframe::egui;
-use egui::{mutex::Mutex, Color32, Vec2b};
+use egui::{mutex::Mutex, Color32, Vec2b, Visuals, Rgba, WidgetText};
 use egui_plot::{Line, Plot, PlotPoints};
 use gilrs::Button::{LeftTrigger2, RightTrigger2};
 use gilrs::Gilrs;
@@ -15,7 +15,10 @@ fn main() {
 
   let options = eframe::NativeOptions {
     viewport: egui::ViewportBuilder::default()
+      .with_decorations(false)
+      // TODO: Next 2 lines wont work for other resolutions
       .with_inner_size([1920.0, 180.0])
+      .with_position([0.0, 1080.0 - 180.0])
       .with_always_on_top()
       .with_transparent(true),
     ..Default::default()
@@ -33,6 +36,7 @@ fn main() {
     loop {
       std::thread::sleep(Duration::from_millis(10));
       let _tmp = gilrs.next_event();
+      // TODO: Handle no connected controllers
       let (_id, gamepad) = gilrs.gamepads().next().unwrap();
       let left = gamepad.button_code(LeftTrigger2).unwrap();
       let right = gamepad.button_code(RightTrigger2).unwrap();
@@ -90,21 +94,29 @@ impl Default for MyApp {
 }
 
 impl eframe::App for MyApp {
+  fn clear_color(&self, _visuals: &Visuals) -> [f32; 4] {
+    Rgba::TRANSPARENT.to_array()
+  }
+
   fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
     let frame = egui::containers::Frame::central_panel(&ctx.style());
+    let invis_formater = |_v, _i, _r: &_| String::new();
 
     egui::CentralPanel::default()
-      .frame(frame.fill(egui::Color32::TRANSPARENT))
+      .frame(frame.fill(egui::Color32::TRANSPARENT).inner_margin(0.0))
       .show(ctx, |ui| {
         let plot = Plot::new("id_source")
+          .x_axis_formatter(invis_formater)
+          .y_axis_formatter(invis_formater)
           .include_x(0)
-          .include_x(self.window_size as f64)
+          .include_x((self.window_size + 10) as f64)
           .include_y(1)
           .include_y(100)
           .clamp_grid(true)
           .show_background(false)
           .show_grid(Vec2b::default())
           .allow_scroll(false)
+          .allow_drag(false)
           .allow_zoom(false);
 
         // TODO: RW Lock
