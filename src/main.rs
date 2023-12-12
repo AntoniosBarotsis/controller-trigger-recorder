@@ -1,5 +1,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
-#![allow(clippy::unwrap_used)]
+#![allow(clippy::unwrap_used, unused_results)]
 
 use std::{sync::Arc, time::Duration};
 
@@ -8,8 +8,7 @@ use eframe::egui;
 use egui::{mutex::Mutex, Color32, Vec2b};
 use egui_plot::{Line, Plot, PlotPoints};
 use gilrs::Button::{LeftTrigger2, RightTrigger2};
-use gilrs::EventType::ButtonChanged;
-use gilrs::{Event, Gilrs};
+use gilrs::Gilrs;
 
 fn main() {
   let app = MyApp::default();
@@ -27,45 +26,32 @@ fn main() {
 
   std::thread::spawn(move || -> ! {
     let mut gilrs = Gilrs::new().unwrap();
-    for (_id, gamepad) in gilrs.gamepads() {
-      println!("{} is {:?}", gamepad.name(), gamepad.power_info());
-    }
 
-    let mut prev_left: Option<f32> = None;
-    let mut prev_right: Option<f32> = None;
+    let mut prev_left = 0.0;
+    let mut prev_right = 0.0;
+
     loop {
-      std::thread::sleep(Duration::from_millis(15));
+      std::thread::sleep(Duration::from_millis(10));
+      let _tmp = gilrs.next_event();
+      let (_id, gamepad) = gilrs.gamepads().next().unwrap();
+      let left = gamepad.button_code(LeftTrigger2).unwrap();
+      let right = gamepad.button_code(RightTrigger2).unwrap();
 
-      if let Some(Event {
-        id: _,
-        event,
-        time: _,
-      }) = gilrs.next_event()
-      {
-        if let ButtonChanged(LeftTrigger2, v, _code) = event {
-          data_left.lock().push(f64::from(v));
-          prev_left = Some(v);
+      let point_left = gamepad
+        .state()
+        .button_data(left)
+        .map_or(prev_left, gilrs::ev::state::ButtonData::value);
 
-          if let Some(prev) = prev_right {
-            data_right.lock().push(f64::from(prev));
-          }
-        }
-        if let ButtonChanged(RightTrigger2, v, _code) = event {
-          data_right.lock().push(f64::from(v));
-          prev_right = Some(v);
+      let point_right = gamepad
+        .state()
+        .button_data(right)
+        .map_or(prev_right, gilrs::ev::state::ButtonData::value);
 
-          if let Some(prev) = prev_left {
-            data_left.lock().push(f64::from(prev));
-          }
-        }
-      } else {
-        if let Some(prev) = prev_left {
-          data_left.lock().push(f64::from(prev));
-        }
-        if let Some(prev) = prev_right {
-          data_right.lock().push(f64::from(prev));
-        }
-      }
+      data_left.lock().push(f64::from(point_left));
+      data_right.lock().push(f64::from(point_right));
+
+      prev_left = point_left;
+      prev_right = point_right;
     }
   });
 
@@ -112,7 +98,7 @@ impl eframe::App for MyApp {
       .show(ctx, |ui| {
         let plot = Plot::new("id_source")
           .include_x(0)
-          .include_x(500)
+          .include_x(self.window_size as f64)
           .include_y(1)
           .include_y(100)
           .clamp_grid(true)
