@@ -1,17 +1,27 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
 #![allow(clippy::unwrap_used, unused_results)]
 
-use std::{sync::Arc, time::Duration};
+use std::{
+  process,
+  sync::{
+    atomic::{AtomicBool, Ordering},
+    Arc,
+  },
+  time::Duration,
+};
 
 use circular_queue::CircularQueue;
 use eframe::egui;
-use egui::{mutex::Mutex, Color32, Vec2b, Visuals, Rgba, WidgetText};
+use egui::{mutex::Mutex, Color32, Rgba, Vec2b, Visuals};
 use egui_plot::{Line, Plot, PlotPoints};
 use gilrs::Button::{LeftTrigger2, RightTrigger2};
 use gilrs::Gilrs;
 
 fn main() {
-  let app = MyApp::default();
+  let should_exit = Arc::new(AtomicBool::new(false));
+  let should_exit_clone = should_exit.clone();
+
+  let app = MyApp::new(should_exit.clone());
 
   let options = eframe::NativeOptions {
     viewport: egui::ViewportBuilder::default()
@@ -27,7 +37,7 @@ fn main() {
   let data_left = app.left.clone();
   let data_right = app.right.clone();
 
-  std::thread::spawn(move || -> ! {
+  std::thread::spawn(move || {
     let mut gilrs = Gilrs::new().unwrap();
 
     let mut prev_left = 0.0;
@@ -56,8 +66,16 @@ fn main() {
 
       prev_left = point_left;
       prev_right = point_right;
+
+      if should_exit_clone.load(Ordering::Relaxed) {
+        println!("Exiting...");
+        break;
+      }
     }
   });
+
+  ctrlc::set_handler(move || should_exit.clone().store(true, Ordering::Relaxed))
+    .expect("Error setting Ctrl-C handler");
 
   eframe::run_native(
     "My egui App",
@@ -74,10 +92,11 @@ struct MyApp {
   left: Arc<Mutex<CircularQueue<f64>>>,
   right: Arc<Mutex<CircularQueue<f64>>>,
   window_size: usize,
+  should_exit: Arc<AtomicBool>,
 }
 
-impl Default for MyApp {
-  fn default() -> Self {
+impl MyApp {
+  fn new(should_exit: Arc<AtomicBool>) -> Self {
     let window_size = 500;
     let mut queue = CircularQueue::with_capacity(window_size);
 
@@ -89,6 +108,7 @@ impl Default for MyApp {
       left: Arc::new(Mutex::new(queue.clone())),
       right: Arc::new(Mutex::new(queue)),
       window_size,
+      should_exit,
     }
   }
 }
@@ -99,6 +119,10 @@ impl eframe::App for MyApp {
   }
 
   fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+    if self.should_exit.load(Ordering::Relaxed) {
+      process::exit(0);
+    }
+
     let frame = egui::containers::Frame::central_panel(&ctx.style());
     let invis_formater = |_v, _i, _r: &_| String::new();
 

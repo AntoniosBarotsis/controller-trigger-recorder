@@ -12,6 +12,7 @@ debug = true
 
 [dependencies]
 circular-queue = "0.2.6"
+ctrlc = { version = "3.4.1", features = ["termination"] }
 eframe = "0.24.1"
 egui = "0.24.1"
 egui_extras = "0.24.2"
