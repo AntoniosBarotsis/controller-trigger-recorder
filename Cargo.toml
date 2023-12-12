@@ -1,0 +1,19 @@
+[package]
+name = "controller-trigger-recorder"
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/AntoniosBarotsis/controller-trigger-recorder"
+license = "GPL-3.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[profile.release] 
+debug = true
+
+[dependencies]
+circular-queue = "0.2.6"
+eframe = "0.24.1"
+egui = "0.24.1"
+egui_extras = "0.24.2"
+egui_plot = "0.24.1"
+gilrs = { version = "0.10.4", default-features=false, features = ["xinput"] }
