@@ -2,6 +2,9 @@
 
 [./assets/acc.mp4](https://github.com/AntoniosBarotsis/controller-trigger-recorder/assets/50240570/1305a434-bbd1-43fb-b4f2-34cab67a008a)
 
+> Video is actually a bit outdated, the window is now fully transparent and the top bezel is
+> invisible but I'm too lazy to re-record it
+
 Creates a transparent chart at the bottom of the screen that shows your controller bumper inputs
 over time (as shown in the video).
 
