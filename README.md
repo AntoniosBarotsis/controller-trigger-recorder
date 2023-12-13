@@ -5,7 +5,7 @@
 > Video is actually a bit outdated, the window is now fully transparent and the top bezel is
 > invisible but I'm too lazy to re-record it
 
-Creates a transparent chart at the bottom of the screen that shows your controller bumper inputs
+Creates a transparent chart at the bottom of the screen that shows your controller trigger inputs
 over time (as shown in the video).
 
 ## Issues and Stuff
