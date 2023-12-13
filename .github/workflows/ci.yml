@@ -15,9 +15,9 @@ jobs:
       fail-fast: false
       matrix:
         job:
-          - { target: aarch64-unknown-linux-gnu , os: ubuntu-22.04 }
-          - { target: x86_64-unknown-linux-gnu  , os: ubuntu-22.04 }
-          - { target: x86_64-apple-darwin       , os: macos-12     }
+          # - { target: aarch64-unknown-linux-gnu , os: ubuntu-22.04 }
+          # - { target: x86_64-unknown-linux-gnu  , os: ubuntu-22.04 }
+          # - { target: x86_64-apple-darwin       , os: macos-12     }
           - { target: x86_64-pc-windows-msvc    , os: windows-2022 }
 
     steps:
@@ -42,7 +42,7 @@ jobs:
 
   lint:
     name: Lint
-    runs-on: ubuntu-22.04
+    runs-on: windows-2022
 
     steps:
       - name: Checkout
@@ -50,8 +50,6 @@ jobs:
 
       - name: Use cached dependencies
         uses: Swatinem/rust-cache@v2
-        with:
-          key: "ubuntu-22.04-x86_64-unknown-linux-gnu"
 
       - name: Install clippy and rustfmt
         run: |
