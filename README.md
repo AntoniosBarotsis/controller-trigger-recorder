@@ -19,6 +19,7 @@ are not great about it:
 - No clue what happens when there's more than 1 controller (but why would that be the case anyway right?)
 - One or two times I noticed some weird performance drop for a few seconds, no idea where that
   came from or if it is still a thing
+- You might need to run games in borderless windowed instead of fullscreen
 
 Note that all of these are actually pretty easy to fix since the project is ~170 lines of code. You
 can also open an issue that I may or may not work on 👍
