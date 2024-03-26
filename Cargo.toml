@@ -10,8 +10,8 @@ license = "GPL-3.0"
 [dependencies]
 circular-queue = "0.2.6"
 ctrlc = { version = "3.4.1", features = ["termination"] }
-eframe = "0.24.1"
-egui = "0.24.1"
-egui_extras = "0.24.2"
-egui_plot = "0.24.1"
+eframe = "0.27.0"
+egui = "0.27.0"
+egui_extras = "0.27.0"
+egui_plot = "0.27.0"
 gilrs = { version = "0.10.4", default-features=false, features = ["xinput"] }
