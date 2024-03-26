@@ -29,8 +29,8 @@ fn main() {
     viewport: egui::ViewportBuilder::default()
       .with_decorations(false)
       // TODO: Next 2 lines wont work for other resolutions
-      .with_inner_size([800.0, 180.0])
-      .with_position([(1920.0 / 2.0) - (850.0 / 2.0), 1080.0 - 180.0])
+      .with_inner_size([800.0, 120.0])
+      .with_position([(1920.0 / 2.0) - (850.0 / 2.0), 1080.0 - 120.0])
       .with_always_on_top()
       .with_transparent(true),
     ..Default::default()
@@ -164,8 +164,8 @@ impl eframe::App for MyApp {
         let left = self.queue_to_points(&self.left);
 
         plot.show(ui, |plot_ui| {
-          plot_ui.line(Line::new(PlotPoints::from(right)).color(Color32::GREEN));
-          plot_ui.line(Line::new(PlotPoints::from(left)).color(Color32::RED));
+          plot_ui.line(Line::new(PlotPoints::from(right)).color(Color32::GREEN).width(2.5));
+          plot_ui.line(Line::new(PlotPoints::from(left)).color(Color32::RED).width(2.5));
         });
       });
 
