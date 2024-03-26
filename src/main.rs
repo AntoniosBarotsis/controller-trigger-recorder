@@ -30,7 +30,7 @@ fn main() {
       .with_decorations(false)
       // TODO: Next 2 lines wont work for other resolutions
       .with_inner_size([800.0, 180.0])
-      .with_position([(1920.0/2.0) - (850.0 / 2.0), 1080.0 - 180.0])
+      .with_position([(1920.0 / 2.0) - (850.0 / 2.0), 1080.0 - 180.0])
       .with_always_on_top()
       .with_transparent(true),
     ..Default::default()
