@@ -10,7 +10,6 @@ use std::{
 };
 
 use circular_queue::CircularQueue;
-use eframe::egui;
 use egui::{mutex::Mutex, Color32, Rgba, Vec2b, Visuals};
 use egui_plot::{Line, Plot, PlotPoints};
 use gilrs::Button::{LeftTrigger2, RightTrigger2};
@@ -30,8 +29,8 @@ fn main() {
     viewport: egui::ViewportBuilder::default()
       .with_decorations(false)
       // TODO: Next 2 lines wont work for other resolutions
-      .with_inner_size([1920.0, 180.0])
-      .with_position([0.0, 1080.0 - 180.0])
+      .with_inner_size([800.0, 180.0])
+      .with_position([(1920.0/2.0) - (850.0 / 2.0), 1080.0 - 180.0])
       .with_always_on_top()
       .with_transparent(true),
     ..Default::default()
@@ -50,7 +49,10 @@ fn main() {
       std::thread::sleep(Duration::from_millis(10));
       let _tmp = gilrs.next_event();
       // TODO: Handle no connected controllers
-      let (_id, gamepad) = gilrs.gamepads().next().unwrap();
+      let (_id, gamepad) = gilrs
+        .gamepads()
+        .next()
+        .expect("No connected controllers found!");
       let left = gamepad.button_code(LeftTrigger2).unwrap();
       let right = gamepad.button_code(RightTrigger2).unwrap();
 
@@ -100,7 +102,7 @@ struct MyApp {
 
 impl MyApp {
   fn new(should_exit: Arc<AtomicBool>) -> Self {
-    let window_size = 500;
+    let window_size = 800;
     let mut queue = CircularQueue::with_capacity(window_size);
 
     for _ in 0..=queue.capacity() {
@@ -141,7 +143,7 @@ impl eframe::App for MyApp {
     let invis_formater = |_v, _i, _r: &_| String::new();
 
     egui::CentralPanel::default()
-      .frame(frame.fill(egui::Color32::TRANSPARENT).inner_margin(0.0))
+      .frame(frame.fill(Color32::TRANSPARENT).inner_margin(0.0))
       .show(ctx, |ui| {
         #[allow(clippy::cast_precision_loss)]
         let plot = Plot::new("id_source")
@@ -167,6 +169,6 @@ impl eframe::App for MyApp {
         });
       });
 
-    ctx.request_repaint_after(Duration::from_millis(500));
+    ctx.request_repaint_after(Duration::from_millis(20));
   }
 }
