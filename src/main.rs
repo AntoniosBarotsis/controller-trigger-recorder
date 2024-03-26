@@ -164,8 +164,16 @@ impl eframe::App for MyApp {
         let left = self.queue_to_points(&self.left);
 
         plot.show(ui, |plot_ui| {
-          plot_ui.line(Line::new(PlotPoints::from(right)).color(Color32::GREEN).width(2.5));
-          plot_ui.line(Line::new(PlotPoints::from(left)).color(Color32::RED).width(2.5));
+          plot_ui.line(
+            Line::new(PlotPoints::from(right))
+              .color(Color32::GREEN)
+              .width(2.5),
+          );
+          plot_ui.line(
+            Line::new(PlotPoints::from(left))
+              .color(Color32::RED)
+              .width(2.5),
+          );
         });
       });
 
