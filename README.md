@@ -21,7 +21,10 @@ are not great about it:
 - Probably early panics if you forget to connect your controller before running it
 - No clue what happens when there's more than 1 controller (but why would that be the case anyway right?)
 - One or two times I noticed some weird performance drop for a few seconds, no idea where that
-  came from or if it is still a thing
+  came from or if it is still a thing. It *might* be happening because the game is loading chunks
+  of the map which sounds like a cheap excuse for a performance skill issue but I noticed that it
+  happens more often in large tracks and in shorter ones it seems to happen at specific areas, even
+  when my laptime is inconsistent. That said, it could also just be a skill issue.
 - You might need to run games in borderless windowed instead of fullscreen
 - Only tested on Windows, probably doesn't work on Linux, might work on Mac
 
